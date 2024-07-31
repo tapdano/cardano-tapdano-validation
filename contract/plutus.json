@@ -25,8 +25,8 @@
           "$ref": "#/definitions/tapdano~1Redeemer"
         }
       },
-      "compiledCode": "58e901000032323232323223223225333006323253330083371e6eb8c008c028dd5002a4410d48656c6c6f2c20576f726c642100100114a06644646600200200644a66601c00229404c94ccc030cdc79bae301000200414a226600600600260200026eb0c02cc030c030c030c030c030c030c030c030c024dd5180098049baa002375c600260126ea80188c02c0045261365653330043370e900018029baa001132325333009300b002149858dd7180480098031baa0011653330023370e900018019baa0011323253330073009002149858dd7180380098021baa001165734aae7555cf2ab9f5742ae881",
-      "hash": "c1fe430f19ac248a8a7ea47db106002c4327e542c3fdc60ad6481103"
+      "compiledCode": "589d010000323232323232232232253330063233372a6eb8c004c024dd50031bae3001300937540086eb8c02cc030c024dd5002118058008a4c26caca66600866e1d200030053754002264646464a666016601a0042930b1bae300b001300b002375c6012002600c6ea8004594ccc008cdc3a400060066ea80044c8c94ccc01cc02400852616375c600e00260086ea8004595cd2ab9d5573caae7d5d0aba21",
+      "hash": "bd6924d5f9a6c073d17f72bfd68ed63fd98f282087e1a6b46d2a2baf"
     }
   ],
   "definitions": {
@@ -42,7 +42,7 @@
           "index": 0,
           "fields": [
             {
-              "title": "owner",
+              "title": "public_key",
               "$ref": "#/definitions/ByteArray"
             }
           ]
@@ -58,7 +58,11 @@
           "index": 0,
           "fields": [
             {
-              "title": "msg",
+              "title": "data",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "signature",
               "$ref": "#/definitions/ByteArray"
             }
           ]
