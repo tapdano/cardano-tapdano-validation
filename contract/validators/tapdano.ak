@@ -1,5 +1,9 @@
 use aiken/bytearray
-use aiken/transaction.{OutputReference, ScriptContext, Spend, TransactionId}
+use aiken/list
+use aiken/string
+use aiken/transaction.{
+  OutputReference, ScriptContext, Spend, Transaction, TransactionId,
+}
 use aiken/transaction/credential.{Signature, VerificationKey, verify_signature}
 
 type Datum {
@@ -7,17 +11,28 @@ type Datum {
 }
 
 type Redeemer {
-  data: ByteArray,
   signature: Signature,
 }
 
 validator {
-  fn spend(datum: Datum, redeemer: Redeemer, _context: ScriptContext) -> Bool {
-    trace bytearray.to_hex(datum.public_key)
-    trace bytearray.to_hex(redeemer.data)
-    trace bytearray.to_hex(redeemer.signature)
+  fn spend(datum: Datum, redeemer: Redeemer, context: ScriptContext) -> Bool {
+    expect Spend(output_reference) = context.purpose
+
     let valid =
-      verify_signature(datum.public_key, redeemer.data, redeemer.signature)
+      list.any(
+        context.transaction.extra_signatories,
+        fn(sig_pk) {
+          let message =
+            output_reference.transaction_id.hash
+              |> bytearray.concat(
+                  bytearray.from_string(
+                    string.from_int(output_reference.output_index),
+                  ),
+                )
+              |> bytearray.concat(sig_pk)
+          verify_signature(datum.public_key, message, redeemer.signature)
+        },
+      )
     valid?
   }
 }
@@ -25,19 +40,33 @@ validator {
 test spend_test() {
   let datum =
     Datum {
-      public_key: #"fb3f51ecebe1ca9aaa17e2cff221226c3af1b10bd03b1950b1c0b74b37fe750c",
+      public_key: #"aaf966740949d8794b1a0382dbcd919e9b7e90220f707513e7168a1c8cea06c6",
     }
   let redeemer =
     Redeemer {
-      data: #"aabbcc",
-      signature: #"b15b8b08a23e595158d8ffc9fc3666062367a0d6df2432c71dc84190edb0e5471a393d3f85c047539fa3bf9146874fb3ff50c3464a4a674002048f316fe1880f",
+      signature: #"2a12441b567de631ee017718c982fd3e58ad3c7c8931b2ad642d40c9856ae00864ff0300a95ea256c6d041e0dd2d5628b3bd26bb8e8d357df8255a60437d0504",
     }
   let placeholder_utxo =
-    OutputReference { transaction_id: TransactionId(""), output_index: 0 }
+    OutputReference {
+      transaction_id: TransactionId(
+        #"26cad25d44f6d8ef86427ad206e7e8a89808bfc3f5830a11dd3825b32a7fa4d1",
+      ),
+      output_index: 0,
+    }
+
   let context =
     ScriptContext {
       purpose: Spend(placeholder_utxo),
-      transaction: transaction.placeholder(),
+      transaction: transaction.placeholder()
+        |> fn(transaction) {
+            Transaction {
+              ..transaction,
+              extra_signatories: [
+                #"31ab577b94f16b06ed1951961d1df1f906fff51c7c8bcdde1eb5139ef9cd7d44",
+              ],
+            }
+          },
     }
+
   spend(datum, redeemer, context)
 }
