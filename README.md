@@ -36,51 +36,6 @@ This repository contains a smart contract designed for on-chain validation of ED
 
     Follow the instructions on the [Aiken website](https://aiken-lang.org/installation-instructions) to install Aiken.
 
-## Usage
-
-### Smart Contract Development
-
-1. **Compile the Smart Contract:**
-
-    Use Aiken to compile the smart contract.
-
-    ```bash
-    aiken build
-    ```
-
-2. **Deploy the Smart Contract:**
-
-    Use your preferred method to deploy the compiled smart contract on the Cardano blockchain.
-
-### Interaction with Lucid
-
-1. **Initialize Lucid:**
-
-    ```javascript
-    const Lucid = require("lucid-cardano");
-
-    const lucid = await Lucid.new();
-    ```
-
-2. **Interact with the Smart Contract:**
-
-    Use Lucid to interact with the deployed smart contract for validation of signatures.
-
-    ```javascript
-    // Example: Validate a signature
-    const result = await lucid.contract.methods.validateSignature({
-      signature: "<signature>",
-      message: "<message>",
-      publicKey: "<publicKey>"
-    });
-
-    console.log("Validation result:", result);
-    ```
-
-## Contributing
-
-We welcome contributions!
-
 ## License
 
 This project is licensed under the MIT License.
