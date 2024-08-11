@@ -8,7 +8,7 @@ use aiken/transaction/credential.{Signature, VerificationKey, verify_signature}
 
 type Datum {
   public_key: VerificationKey,
-  data: Data,
+  data: ByteArray,
 }
 
 type Redeemer {
