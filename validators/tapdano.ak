@@ -8,6 +8,7 @@ use aiken/transaction/credential.{Signature, VerificationKey, verify_signature}
 
 type Datum {
   public_key: VerificationKey,
+  data: Data,
 }
 
 type Redeemer {
@@ -41,6 +42,7 @@ test spend_test() {
   let datum =
     Datum {
       public_key: #"aaf966740949d8794b1a0382dbcd919e9b7e90220f707513e7168a1c8cea06c6",
+      data: #"00",
     }
   let redeemer =
     Redeemer {
