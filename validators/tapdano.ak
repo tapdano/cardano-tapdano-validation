@@ -1,10 +1,12 @@
+use aiken/builtin.{sha2_256, verify_ecdsa_secp256k1_signature}
 use aiken/bytearray
+use aiken/cbor
 use aiken/list
 use aiken/string
 use aiken/transaction.{
   OutputReference, ScriptContext, Spend, Transaction, TransactionId,
 }
-use aiken/transaction/credential.{Signature, VerificationKey, verify_signature}
+use aiken/transaction/credential.{Signature, VerificationKey}
 
 type Datum {
   public_key: VerificationKey,
@@ -31,7 +33,20 @@ validator {
                   ),
                 )
               |> bytearray.concat(sig_pk)
-          verify_signature(datum.public_key, message, redeemer.signature)
+          trace @"datum.public_key"
+          trace cbor.diagnostic(datum.public_key)
+          trace @"message"
+          trace cbor.diagnostic(message)
+          trace @"redeemer.signature"
+          trace cbor.diagnostic(redeemer.signature)
+          let message_hash = sha2_256(message)
+          trace @"message_hash"
+          trace cbor.diagnostic(message_hash)
+          verify_ecdsa_secp256k1_signature(
+            datum.public_key,
+            message_hash,
+            redeemer.signature,
+          )
         },
       )
     valid?
@@ -41,12 +56,12 @@ validator {
 test spend_test() {
   let datum =
     Datum {
-      public_key: #"aaf966740949d8794b1a0382dbcd919e9b7e90220f707513e7168a1c8cea06c6",
+      public_key: #"02a419381b4faa0e095cc91b0ac56ac4287c0c26bece03eb858c86920764b9eaa3",
       data: #"00",
     }
   let redeemer =
     Redeemer {
-      signature: #"2a12441b567de631ee017718c982fd3e58ad3c7c8931b2ad642d40c9856ae00864ff0300a95ea256c6d041e0dd2d5628b3bd26bb8e8d357df8255a60437d0504",
+      signature: #"d02cdddacb0de16975d5b2f1045c673d7fa913c1422d2205068eb13f8807878f09ff13e4cf0b6fa959d61634262a5544593e878f330a15df9d0be5da19d786f0",
     }
   let placeholder_utxo =
     OutputReference {
